@@ -1,59 +1,66 @@
 // textNode.js
 
-import { useEffect, useState } from 'react';
-import { Handle, Position, useEdges } from 'reactflow';
+import { useEffect, useState, memo } from 'react';
+import { Handle, Position } from 'reactflow';
 import TextField from '@mui/material/TextField';
 import { MdTextSnippet } from "react-icons/md";
+import { useUpdateNodeInternals } from 'reactflow';
 
-const getHanlderPosition = ({handlerSize, index}) => `${index/handlerSize*100}%`
+const getHanlderPosition = ({ handlerSize, index }) => `${index / handlerSize * 100}%`
 
 export const TextNode = ({ id, data }) => {
+  const updateNodeInternals = useUpdateNodeInternals();
   const [currText, setCurrText] = useState(data?.text || '{{input}}');
   const [handlers, setHandlers] = useState([]);
+
   const handleTextChange = (e) => {
     setCurrText(e.target.value);
   };
 
   useEffect(() => {
-    let found = [],curMatch; // an array to collect the strings that are found
-    const rxp = /\{{([^}]+)\}}/g;
+    let found = [], curMatch; // an array to collect the strings that are found
+    const rxp = /\{{([^}]+)\}}/g; // REGEX find value between double curly braces
 
-    while( curMatch = rxp.exec(currText) ) {
-        found.push(curMatch[1]);
+    while (curMatch = rxp.exec(currText)) {
+      found.push(curMatch[1]);
     }
-    setHandlers(found)
+    if (found.length !== handlers.length) {
+      setHandlers(found);
+      setTimeout(() => updateNodeInternals(id), 0);
+    }
+
   }, [currText])
 
   return (
-    <div className='nodeBody'>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-value`}
-      />
-      {/* {handlers && handlers.map((handler, index) => <Handle
+    <div className='nodeBody' >
+      {handlers && handlers.map((_, index) => <Handle
         type='target'
         position={Position.Left}
-        id={`${id}-system`}
-        style={{top: getHanlderPosition({
-          handlerSize: handlers.length + 1,
-          index: index+1
-        })}}
+        id={`${id}-text-${index}`}
+        style={{
+          top: getHanlderPosition({
+            handlerSize: handlers.length + 1,
+            index: index + 1
+          })
+        }}
       />)
-      } */}
+      }
+
       <div className='nodeHeader'>
-        <MdTextSnippet className="nodeHeaderIcon"/>
+        <MdTextSnippet className="nodeHeaderIcon" />
         <div className="nodeHeaderTitle">Text</div>
       </div>
       <div className='nodeDiv'>
-          <TextField
+        <TextField
           multiline
           maxRows={4}
-          type="text" 
+          type="text"
           value={currText}
-          onChange={handleTextChange} 
+          onChange={handleTextChange}
         />
       </div>
     </div>
   );
 }
+
+export default memo(TextNode)
