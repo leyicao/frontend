@@ -34,6 +34,7 @@ export const TextNode = ({ id, data }) => {
   return (
     <div className='nodeBody' >
       {handlers && handlers.map((_, index) => <Handle
+      key={`text-${index}`}
         type='target'
         position={Position.Left}
         id={`${id}-text-${index}`}

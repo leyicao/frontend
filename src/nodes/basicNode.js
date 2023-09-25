@@ -17,12 +17,12 @@ const options = [
 ];
 
 export const BasicNode = ({ id, data }) => {
-  const [user, setUser] = useState(data?.selects || []);
+  const [basicHandleType, setBasicHandleType] = useState(data?.selects || []);
 
   const onChange = (index, val) => {
-    const newUsers = [...user];
-    newUsers[index] = val;
-    setUser(newUsers)
+    const newBasicHandleType = [...basicHandleType];
+    newBasicHandleType[index] = val;
+    setBasicHandleType(newBasicHandleType)
   }
 
   return (
@@ -32,11 +32,11 @@ export const BasicNode = ({ id, data }) => {
         <div className="nodeHeaderTitle">Basic</div>
       </div>
       <div>
-        <button onClick={() => setUser([...user, 'text'])}>+</button>
+        <button onClick={() => setBasicHandleType([...basicHandleType, 'text'])}>+</button>
       </div>
       <div className="nodeDiv">
-        {user?.map((handleType, index) => (
-          <div>
+        {basicHandleType?.map((handleType, index) => (
+          <div key={`basic-${index}`}>
           <span>Type:</span>
           <select className="nodrag" onChange={(e) => onChange(index, e.target.value)} value={handleType}>
           {options.map((option) => (
